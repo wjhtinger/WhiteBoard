@@ -2,7 +2,16 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "25.0.0"
+//    lintOptions {        //忽略一些构建信息，降低对错误的检查
+//        checkReleaseBuilds false
+//        abortOnError false
+//    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
 
     defaultConfig {
         applicationId "com.example.gpy.whiteboard"
