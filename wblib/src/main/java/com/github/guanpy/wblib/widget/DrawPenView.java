@@ -53,6 +53,7 @@ public class DrawPenView extends View {
     private final float TOUCH_TOLERANCE = 4;
     private Context mContext;
     private Canvas mCanvas = null;
+    private boolean mMoveFlg = false;
 
     public DrawPenView(Context context, AttributeSet attr, int defStyle) {
         super(context, attr, defStyle);
@@ -184,7 +185,7 @@ public class DrawPenView extends View {
                     posX = x;
                     posY = y;
                     postInvalidate();
-
+                    mMoveFlg = false;
                     break;
                 case MotionEvent.ACTION_MOVE:
                     float dx = Math.abs(x - posX);
@@ -195,10 +196,24 @@ public class DrawPenView extends View {
                         mPath.quadTo(posX, posY, (x + posX) / 2, (y + posY) / 2);
                         posX = x;
                         posY = y;
+                        mMoveFlg = true;
                     }
                     postInvalidate();
                     break;
                 case MotionEvent.ACTION_UP:
+                    if(mMoveFlg == false){
+                        dx = Math.abs(x - posX);
+                        dy = Math.abs(y - posY);
+                        if(dx < TOUCH_TOLERANCE && dy < TOUCH_TOLERANCE){
+                            dx = OperationUtils.getInstance().mCurrentPenSize / 2;
+                            x += dx;
+                            dy = OperationUtils.getInstance().mCurrentPenSize / 2 ;
+                            y += dy;
+                            mDrawPenStr.getQuadToA().add(new Point(posX,posY));
+                            mDrawPenStr.getQuadToB().add(new Point((x + posX) / 2,(y + posY) / 2));
+                            mPath.quadTo(posX, posY, (x + posX) / 2, (y + posY) / 2);
+                        }
+                    }
                     mDrawPenStr.setLineTo(new Point(posX, posY));
                     mPath.lineTo(posX, posY);
                     mDrawPenStr.setOffset(new Point(0, -mBottomBitmapDrawHeight));
